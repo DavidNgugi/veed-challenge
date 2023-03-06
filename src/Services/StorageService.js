@@ -6,7 +6,7 @@ export const get = (key) => {
 
 export const set = (key, value) => {
     const current = get(key);
-    if (current === value) return;
+    if (current && current === value) return;
     storage.setItem(key, value);
 }
 

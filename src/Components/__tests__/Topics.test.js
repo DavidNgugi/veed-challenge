@@ -9,14 +9,14 @@ describe("Topics", () => {
     it("should render Topics", () => {
 
         render(<Topics topics={topics}  />);
-        expect(screen.getByText("test")).toBeInTheDocument();
-        expect(screen.getByText("test2")).toBeInTheDocument();
+        expect(screen.getByTestId("topic-0")).toHaveTextContent("test");
+        expect(screen.getByTestId("topic-1")).toHaveTextContent("test2");
     });
 
     it("should render Topics with no data", () => {
         const topics = [];
         render(<Topics topics={topics}  />);
-        expect(screen.getByTestId("topic")).toBeInTheDocument();
+        expect(screen.getByTestId("topics")).toBeInTheDocument();
     });
 
 });

@@ -91,7 +91,7 @@ const TrendingRepos = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container" data-testid="repo-container">
             <h1>Trending Repositories</h1>
             <div className="repo-filters">
                 <p>Filter By:</p>
@@ -112,8 +112,8 @@ const TrendingRepos = () => {
                 <button className="tablinks active" data-tab="all-repos" ref={allRepos} onClick={openTab}>All Repos - <span className="repo-count">{convertToKMB(languageFilter ? filteredData.length : data.length)}</span></button>
                 <button className="tablinks" data-tab="starred-repos" ref={starredRepos} onClick={openTab}>Starred Repos - <span className="repo-count">{convertToKMB(starred.length)}</span></button>
             </div>
-            <Suspense fallback={<Loader />}>
-                <ErrorBoundary>
+            <ErrorBoundary>
+                <Suspense fallback={<Loader />}>
                     <div className="tabcontent show" ref={allReposContent}>
 
                         <RepoList data={languageFilter ? filteredData : data} starRepo={starRepo} starred={starred} />
@@ -121,8 +121,8 @@ const TrendingRepos = () => {
                     <div className="tabcontent" ref={starredReposContent}>
                         <RepoList data={starred} starRepo={starRepo} starred={starred} />
                     </div>
-                </ErrorBoundary>
-            </Suspense>
+                </Suspense>
+            </ErrorBoundary>
         </div>
     );
 };

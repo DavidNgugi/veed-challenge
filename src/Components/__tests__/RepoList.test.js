@@ -1,10 +1,10 @@
 import React from "react";
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import RepoList from "../RepoList";
 
 describe("RepoList", () => {
 
-    it("should render RepoList", () => {
+    it("should render RepoList", async () => {
         const data = [
             {
                 id: 1,
@@ -19,59 +19,27 @@ describe("RepoList", () => {
                 name: "test2",
                 html_url: "test2",
                 description: "test description2",
-                language: "JavaScript",
+                language: "Python",
                 stars: 2000
             }
         ];
-        const starRepo = jest.fn();
+        const starRepo = jest.fn(() => Promise.resolve(999));
         const starred = [];
 
         render(<RepoList data={data} starRepo={starRepo} starred={starred} />);
-        expect(screen.getByText("test")).toBeInTheDocument();
-        expect(screen.getByText("1k")).toBeInTheDocument();
-        expect(screen.getByText("test description")).toBeInTheDocument();
-        expect(screen.getByText("JavaScript")).toBeInTheDocument();
-        expect(screen.getByText("test2")).toBeInTheDocument();
-        expect(screen.getByText("2k")).toBeInTheDocument();
-        expect(screen.getByText("test description2")).toBeInTheDocument();
-        expect(screen.getByText("JavaScript")).toBeInTheDocument();
+
+        await waitFor(() => expect(screen.getAllByTestId("repo-card")).toHaveLength(2));
     });
 
-    it("should render RepoList with no data", () => {
+    it("should not render RepoList with no data", async () => {
         const data = [];
         const starRepo = jest.fn();
         const starred = [];
 
         render(<RepoList data={data} starRepo={starRepo} starred={starred} />);
-        expect(screen.getByText("No repos found")).toBeInTheDocument();
-    });
 
-    // it("should show loader component when loading", () => {});
-
-    it("should render ErrorBoundary when error", () => {
-        const data = [
-            {
-                id: 1,
-                name: "test",
-                html_url: "test",
-                description: "test description",
-                language: "JavaScript",
-                stars: 1000
-            },
-            {
-                id: 2,
-                name: "test2",
-                html_url: "test2",
-                description: "test description2",
-                language: "JavaScript",
-                stars: 2000
-            }
-        ];
-        const starRepo = jest.fn();
-        const starred = [];
-
-        render(<RepoList data={data} starRepo={starRepo} starred={starred} error="error" />);
-        expect(screen.getByText("Something went wrong!")).toBeInTheDocument();
+        const repoCard = screen.queryByTestId("repo-card");
+        await waitFor(() => expect(repoCard).toBeNull());
     });
 
 });

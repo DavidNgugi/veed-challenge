@@ -1,30 +1,31 @@
 import React from "react";
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from "@testing-library/user-event";
 import RepoCard from "../RepoCard";
 
 describe("RepoCard", () => {
 
-    it("should render RepoCard", () => {
+    it("should render RepoCard", async () => {
         const repo = {
             id: 1,
             name: "test",
             html_url: "test",
             description: "test description",
             language: "JavaScript",
-            stars: 1000
+            stars: 10500
         };
-        const starRepo = jest.fn();
+        const starRepo = jest.fn((repo) => Promise.resolve());
         const isStarred = false;
         
         render(<RepoCard repo={repo} starRepo={starRepo} isStarred={isStarred} />);
-        expect(screen.getByText("test")).toBeInTheDocument();
-        expect(screen.getByText("1k")).toBeInTheDocument();
-        expect(screen.getByText("test description")).toBeInTheDocument();
-        expect(screen.getByText("JavaScript")).toBeInTheDocument();
+        expect(screen.getByTestId("name")).toHaveTextContent(repo["name"]);
+        expect(screen.getByTestId("stars")).toHaveTextContent("10.5k");
+        expect(screen.getByTestId("description")).toHaveTextContent(repo["description"]);
+        expect(screen.getByTestId("language")).toHaveTextContent(repo["language"]);
     });
 
     it("should increase star count when star button is clicked", () => {
-        const repo = {
+        let repo = {
             id: 1,
             name: "test",
             html_url: "test",
@@ -38,14 +39,19 @@ describe("RepoCard", () => {
         const isStarred = false;
         
         render(<RepoCard repo={repo} starRepo={starRepo} isStarred={isStarred} />);
-        expect(screen.getByText("1k")).toBeInTheDocument();
-        screen.getByText("Star").click();
+
+        const starsElement = screen.getByTestId("stars");
+        expect(starsElement).toHaveTextContent("1.0k");
+
+        const starButton = screen.getByTestId("star");
+        fireEvent.click(starButton);
+
         expect(starRepo).toHaveBeenCalledTimes(1);
-        expect(screen.getByText("1.1k")).toBeInTheDocument();
+        expect(starsElement).toHaveTextContent("1.1k");
     });
 
     it("should reduce count when unstar button is clicked", () => {
-        const repo = {
+        let repo = {
             id: 1,
             name: "test",
             html_url: "test",
@@ -59,9 +65,16 @@ describe("RepoCard", () => {
         const isStarred = true;
         
         render(<RepoCard repo={repo} starRepo={starRepo} isStarred={isStarred} />);
-        expect(screen.getByText("1k")).toBeInTheDocument();
-        screen.getByText("Unstar").click();
+
+        const starsElement = screen.getByTestId("stars");
+        expect(starsElement).toHaveTextContent("1.0k");
+        
+        const starButton = screen.getByTestId("star");
+        fireEvent.click(starButton);
+
         expect(starRepo).toHaveBeenCalledTimes(1);
-        expect(screen.getByText("900")).toBeInTheDocument();
+        expect(repo.stars).toBe(900);
+
+        expect(starsElement).toHaveTextContent("900");
     });
 });

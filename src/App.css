@@ -81,6 +81,7 @@ select {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .repo {
@@ -90,6 +91,7 @@ select {
   border-radius: 5px;
   width: 400px;
   height: auto;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

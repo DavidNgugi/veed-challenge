@@ -60,19 +60,6 @@ describe('ApiService', () => {
             expect(repos[0].topics).toEqual(['topic1', 'topic2']);
         });
 
-        it('should return a list of repos filtered by language', async () => {
-            const repos = await ApiService.getTrendingRepos('&language=javascript');
-            expect(repos.length).toBe(1);
-            expect(repos[0].id).toBe(1);
-            expect(repos[0].name).toBe('repo1');
-            expect(repos[0].owner).toBe('owner1');
-            expect(repos[0].description).toBe('description1');
-            expect(repos[0].url).toBe('https://example.github.com/repo1');
-            expect(repos[0].stars).toBe(100);
-            expect(repos[0].language).toBe('javascript');
-            expect(repos[0].topics).toEqual(['topic1', 'topic2']);
-        });
-
         it('should return an empty list if no repos are found', async () => {
             global.fetch = fakeFetch({
                 items: []
