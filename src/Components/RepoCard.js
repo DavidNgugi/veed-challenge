@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 export const RepoCard = ({ repo, starRepo, isStarred }) => {
     const { id, name, html_url, description, language, stars } = repo;
     return (
+
         <div className="repo">
             <div className="repo-main">
                 <h3 className="repo-name">
@@ -14,8 +15,8 @@ export const RepoCard = ({ repo, starRepo, isStarred }) => {
                 </h3>
                 <div className="add-repo-star">
                     <AiFillStar
-                        color={isStarred ? "#ffc107": "#e4e5e9" }
-                        size={25} 
+                        color={isStarred ? "#ffc107" : "#e4e5e9"}
+                        size={25}
                         onClick={() => starRepo(id)}
                     />
                 </div>
@@ -28,12 +29,13 @@ export const RepoCard = ({ repo, starRepo, isStarred }) => {
                 <div className="repo-star">
                     <AiFillStar
                         color={"#e4e5e9"}
-                        size={25} 
+                        size={25}
                     />
                     <span>{convertToKMB(stars)}</span>
-                </div> 
+                </div>
             </div>
         </div>
+
     )
 }
 

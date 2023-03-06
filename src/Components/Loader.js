@@ -2,7 +2,7 @@ import { Oval } from 'react-loader-spinner';
 
 const Loader = () => {
     return (
-        <div className="loader">
+        <div className="loader" data-testid="loader">
             <Oval
                 height={80}
                 width={80}

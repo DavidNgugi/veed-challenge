@@ -1,4 +1,5 @@
 import { Suspense, lazy } from "react";
+import ErrorBoundary from "./ErrorBoundary";
 
 const RepoCard = lazy(() => import("./RepoCard"));
 
@@ -6,11 +7,11 @@ const RepoList = ({ data, starRepo, starred }) => {
 
     return (
         <div className="repo-list">
-            {data.map((repo, index) => {
+            <ErrorBoundary>
+            {data && data.map((repo, index) => {
                 const isStarred = starred.includes(repo);
                 return (
                     <Suspense fallback={<RepoGlimmer />}>
-
                         <RepoCard
                             key={index}
                             repo={repo}
@@ -20,6 +21,7 @@ const RepoList = ({ data, starRepo, starred }) => {
                     </Suspense>
                 )
             })}
+            </ErrorBoundary>
         </div>
     );
 }

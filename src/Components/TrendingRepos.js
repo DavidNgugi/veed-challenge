@@ -1,7 +1,8 @@
-import React, { useState, useEffect, lazy, Suspense, useRef, useMemo } from "react";
+import React, { useState, useEffect, lazy, Suspense, useRef } from "react";
 
 import * as ApiService from "../Services/ApiService";
 import * as StorageService from "../Services/StorageService";
+import { convertToKMB } from "../Utils";
 
 import Loader from "./Loader";
 import ErrorBoundary from "./ErrorBoundary";
@@ -10,34 +11,27 @@ const RepoList = lazy(() => import("./RepoList"));
 
 const TrendingRepos = () => {
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [starred, setStarred] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [languageFilter, setLanguageFilter] = useState(null);
-    
-    const languageRef = useRef();
+
     const allRepos = useRef();
     const starredRepos = useRef();
     const allReposContent = useRef();
     const starredReposContent = useRef();
 
+    useEffect(() => {
+        ApiService.getTrendingRepos().then((repos) => setData(repos));
+    }, []);
 
     useEffect(() => {
-        const filter_params = languageFilter ? `&language=${languageFilter}` : "";
-        ApiService.getTrendingRepos(filter_params).then((repos) => setData(repos));
-    }, [languageFilter]);
-
-    useEffect(() => {
-        if(data){
+        if (data) {
             const languages = data.map((repo) => repo.language).filter((language) => language !== null);
             const uniqueLanguages = [...new Set(languages)];
             setLanguages(uniqueLanguages);
         }
     }, [data]);
-
-    // useEffect(() => {
-    //     const filter_params = languageFilter ? `&language=${languageFilter}` : "";
-    //     ApiService.getTrendingRepos(filter_params).then((repos) => setData(repos));
-    // }, [languageFilter]);
 
     useEffect(() => {
         const starredReposJSON = StorageService.get("starredRepos");
@@ -65,9 +59,9 @@ const TrendingRepos = () => {
     const starRepo = (id) => {
         const newData = [...data];
         const index = newData.findIndex((repo) => repo.id === id);
-        newData[index].stars += 1000;
+        newData[index].stars += 1;
         setData(newData);
-        
+
         const newStarred = [...starred];
         const inStarredIndex = newStarred.findIndex((repo) => repo.id === id);
 
@@ -76,7 +70,7 @@ const TrendingRepos = () => {
             setStarred(newStarred);
             StorageService.appendToItem("starredRepos", data[index]);
         } else {
-            newData[index].stars -= 1000;
+            newData[index].stars -= 1;
             setData(newData);
             newStarred.splice(inStarredIndex, 1);
             setStarred(newStarred);
@@ -84,14 +78,16 @@ const TrendingRepos = () => {
         }
     };
 
-    const onSelectFilterLanguage = (e) => {
-        const language = e.target.value;
-        console.log('language', language);
-        setLanguageFilter(language);
-    };
-
-    const clearLanguageFilter = () => {
-        setLanguageFilter(null);
+    const onSelectFilterLanguage = (event) => {
+        const language = event.target.value;
+        if (language === 'All') {
+            setLanguageFilter(null);
+            setFilteredData([]);
+        }else {
+            const filteredRepos = data.filter((repo) => `${repo.language}`.toLowerCase() === `${language}`.toLowerCase());
+            setLanguageFilter(language);
+            setFilteredData(filteredRepos);
+        }
     };
 
     return (
@@ -101,10 +97,10 @@ const TrendingRepos = () => {
                 <p>Filter By:</p>
                 <div className="language-filter">
                     <p>Language:</p>
-                    <select className="language-filter-select" >
-                        <option value="all" onClick={clearLanguageFilter}>All</option>
+                    <select className="language-filter-select" onChange={onSelectFilterLanguage}>
+                        <option value="All">All</option>
                         {languages.map((language, index) => (
-                            <option key={index} value={language} ref={languageRef} onClick={onSelectFilterLanguage}>
+                            <option key={index} value={language}>
                                 {language}
                             </option>
                         ))}
@@ -112,23 +108,21 @@ const TrendingRepos = () => {
                 </div>
             </div>
 
-            <ErrorBoundary>
-                <div className="tabs">
-                    <button className="tablinks active" data-tab="all-repos" ref={allRepos} onClick={openTab}>All Repos</button>
-                    <button className="tablinks" data-tab="starred-repos" ref={starredRepos} onClick={openTab}>Starred Repos</button>
-                </div>
+            <div className="tabs">
+                <button className="tablinks active" data-tab="all-repos" ref={allRepos} onClick={openTab}>All Repos - <span className="repo-count">{convertToKMB(languageFilter ? filteredData.length : data.length)}</span></button>
+                <button className="tablinks" data-tab="starred-repos" ref={starredRepos} onClick={openTab}>Starred Repos - <span className="repo-count">{convertToKMB(starred.length)}</span></button>
+            </div>
+            <Suspense fallback={<Loader />}>
+                <ErrorBoundary>
+                    <div className="tabcontent show" ref={allReposContent}>
 
-                <div className="tabcontent show" ref={allReposContent}>
-                    <Suspense fallback={<Loader />}>
-                        <RepoList data={data} starRepo={starRepo} starred={starred} />
-                    </Suspense>
-                </div>
-                <div className="tabcontent" ref={starredReposContent}>
-                    <Suspense fallback={<Loader />}>
+                        <RepoList data={languageFilter ? filteredData : data} starRepo={starRepo} starred={starred} />
+                    </div>
+                    <div className="tabcontent" ref={starredReposContent}>
                         <RepoList data={starred} starRepo={starRepo} starred={starred} />
-                    </Suspense>
-                </div>
-            </ErrorBoundary>
+                    </div>
+                </ErrorBoundary>
+            </Suspense>
         </div>
     );
 };

@@ -1,8 +1,8 @@
 const Topics = ({ topics }) => {
     return (
         <div className="repo-topics">
-            {topics.map((topic, index) => (
-                <span className="topic" key={index}>
+            {topics && topics.map((topic, index) => (
+                <span className="topic" data-testid="topic" key={index}>
                     {topic}
                 </span>
             ))};

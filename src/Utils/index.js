@@ -1,4 +1,5 @@
 export const convertToKMB = (count) => {
+  if(!count) return 0;
   const abbreviations = ["", "k", "m", "b", "t"];
   const sign = Math.sign(count);
   const absCount = Math.abs(count);

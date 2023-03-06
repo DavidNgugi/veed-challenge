@@ -96,6 +96,18 @@ select {
   word-wrap: break-word;
 }
 
+.repo-count {
+  border-radius: 50%;
+  display: inline-block;
+  align-items: center;
+  min-width: 10px;
+  padding: 5px;
+  background-color: #c0bdbd;
+  color: #000;
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .glimmer-repo {
   margin: 10px;
   padding: 10px;

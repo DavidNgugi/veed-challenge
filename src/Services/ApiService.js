@@ -18,20 +18,10 @@ export const getTrendingRepos = async (filter_params = null) => {
         language: repo.language,
         topics: repo.topics ?? [],
     }));
-
-    console.log('Trending Repos Count', trendingRepos.length);
     
     return trendingRepos;
   } catch (error) {
-    console.log('getTrendingRepos', error);
-    throw error;
+    return [];
   }
-};
 
-const chunkData = (data, chunkSize) => {
-  const chunkedData = [];
-  for (let i = 0; i < data.length; i += chunkSize) {
-    chunkedData.push(data.slice(i, i + chunkSize));
-  }
-  return chunkedData;
 };
